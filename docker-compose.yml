@@ -1,0 +1,39 @@
+version: '3.1'
+
+networks:
+  default:
+    driver: bridge
+
+services:
+  gateway:
+    build:
+      context: ./docker/gateway
+    container_name: db-gateway
+    volumes:
+      - ./public:/var/www/public:ro
+    ports:
+      - 8000:80
+      # - 9004:81
+    depends_on:
+      - app
+      # - admin
+
+  app:
+    build:
+      context: ./docker/app
+    container_name: db-app
+    volumes:
+      - ./:/var/www:rw
+
+  mysql:
+    image: mysql:5.7
+    container_name: db-mysql
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=secret"
+      - "MYSQL_DATABASE=homestead"
+      - "MYSQL_USER=homestead"
+      - "MYSQL_PASSWORD=homestead"
+    ports:
+      - "3369:3306"
